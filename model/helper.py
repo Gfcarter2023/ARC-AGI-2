@@ -1,24 +1,7 @@
-from transformers import AutoModelForCausalLM, AutoTokenizer
-import json
 import os
 import warnings
-import ast
-from tqdm import tqdm
-import random
-
-import pandas as pd
-
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
-import numpy as np
-import random
-
 import matplotlib.pyplot as plt
 from   matplotlib import colors
-import seaborn as sns
 warnings.filterwarnings('ignore')
 
 cmap = colors.ListedColormap(
@@ -28,7 +11,7 @@ norm = colors.Normalize(vmin=0, vmax=9)
 
 
 def get_path(name):
-    return f'/kaggle/input/arc-prize-2025/{name}' if os.path.exists(f'/kaggle/input/arc-prize-2025/{name}') else name
+    return f'../data/input/{name}' if os.path.exists(f'../data/input/{name}') else name
 
 
 def plot_task(task, task_solutions, i, t, size=2.5, w1=0.9, prediction=None):

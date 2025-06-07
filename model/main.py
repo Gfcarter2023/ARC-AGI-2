@@ -1,24 +1,15 @@
-from transformers import AutoModelForCausalLM, AutoTokenizer
 import json
-import os
 import warnings
-import ast
-from tqdm import tqdm
-import random
-
-import pandas as pd
-
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
-import numpy as np
-import random
+from torch.utils.data import DataLoader
 
-import matplotlib.pyplot as plt
-from   matplotlib import colors
-import seaborn as sns
+import helper
+from neural_network import FullARCModel
+from dataset import ARCDataset, collate_fn
+from train import train_arc_model, predict_on_test_data
+
 warnings.filterwarnings('ignore')
 
  # Hyperparameters
@@ -50,11 +41,11 @@ optimizer = optim.Adam(full_arc_model.parameters(), lr=LEARNING_RATE, weight_dec
     # --- Load ARC Data ---
 print("Loading ARC dataset files...")
 try:
-    training_solutions = json.load(open(get_path('arc-agi_training_solutions.json')))
-    evaluation_solutions = json.load(open(get_path('arc-agi_evaluation_solutions.json')))
-    evaluation_challenges = json.load(open(get_path('arc-agi_evaluation_challenges.json')))
-    training_challenges = json.load(open(get_path('arc-agi_training_challenges.json')))
-    test_challenges = json.load(open(get_path('arc-agi_test_challenges.json')))
+    training_solutions = json.load(open(helper.get_path('arc-agi_training_solutions.json')))
+    evaluation_solutions = json.load(open(helper.get_path('arc-agi_evaluation_solutions.json')))
+    evaluation_challenges = json.load(open(helper.get_path('arc-agi_evaluation_challenges.json')))
+    training_challenges = json.load(open(helper.get_path('arc-agi_training_challenges.json')))
+    test_challenges = json.load(open(helper.get_path('arc-agi_test_challenges.json')))
     print("ARC dataset files loaded successfully.")
 except FileNotFoundError as e:
     print(f"Error loading file: {e}. Please ensure 'get_path' is correctly configured and files exist.")
@@ -97,7 +88,7 @@ print("\n--- Generating predictions for test data ---")
 test_predictions = predict_on_test_data(full_arc_model, test_loader, device)
 
 # Save predictions to a JSON file
-submission_filename = 'submission.json'
+submission_filename = 'data/output/submission.json'
 with open(submission_filename, 'w') as f:
     json.dump(test_predictions, f, indent=4)
 print(f"Predictions saved to {submission_filename}")

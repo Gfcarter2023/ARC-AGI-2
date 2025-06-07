@@ -1,3 +1,12 @@
+import warnings
+import random
+import torch
+import torch.nn.functional as F
+from torch.utils.data import Dataset
+import numpy as np
+import random
+warnings.filterwarnings('ignore')
+
 class ARCDataset(Dataset):
     def __init__(self, challenges, solutions, num_colors=10, grid_size=30, num_train_pairs=2, augment=False):
         self.num_colors = num_colors

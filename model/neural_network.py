@@ -1,25 +1,11 @@
-from transformers import AutoModelForCausalLM, AutoTokenizer
-import json
-import os
 import warnings
-import ast
-from tqdm import tqdm
-import random
-
-import pandas as pd
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
-import numpy as np
-import random
-
-import matplotlib.pyplot as plt
-from   matplotlib import colors
-import seaborn as sns
 warnings.filterwarnings('ignore')
+
+from utility_classes import ResidualBlock
+from data_conversion import ProblemEncoder, OutputDecoder
 
 class ARCNeuralNetwork(nn.Module):
     """

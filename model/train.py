@@ -1,3 +1,9 @@
+import json
+import warnings
+import torch
+import torch.optim as optim
+warnings.filterwarnings('ignore')
+
 def train_arc_model(model, train_loader, val_loader, optimizer, criterion, num_epochs, device, evaluation_challenges,
                     val_dataset, GRID_SIZE):
     # New: Learning Rate Scheduler
@@ -201,7 +207,7 @@ def train_arc_model(model, train_loader, val_loader, optimizer, criterion, num_e
         scheduler.step(avg_val_loss)
 
 
-def predict_on_test_data(model, test_loader, device):
+def predict_on_test_data(model, test_loader, device, GRID_SIZE=30):
     """
     Generates predictions for the test dataset and formats them for submission.
     """
