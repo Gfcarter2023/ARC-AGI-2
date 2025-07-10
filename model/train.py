@@ -7,7 +7,7 @@ warnings.filterwarnings('ignore')
 def train_arc_model(model, train_loader, val_loader, optimizer, criterion, num_epochs, device, evaluation_challenges,
                     val_dataset, GRID_SIZE):
     # New: Learning Rate Scheduler
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3, verbose=True)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3, verbose=True,)
     
     model.to(device)
     for epoch in range(num_epochs):
@@ -68,7 +68,7 @@ def train_arc_model(model, train_loader, val_loader, optimizer, criterion, num_e
             width_loss = criterion(predicted_width_logits, problem_batch['correct_test_output_width'] - 1)
 
             # Total loss
-            LAMBDA_SIZE_LOSS = 0.1  # Hyperparameter to weigh size prediction loss
+            LAMBDA_SIZE_LOSS = 0.5  # Hyperparameter to weigh size prediction loss
             loss = grid_loss + LAMBDA_SIZE_LOSS * (height_loss + width_loss)
 
             loss.backward()
@@ -195,8 +195,8 @@ def train_arc_model(model, train_loader, val_loader, optimizer, criterion, num_e
 
         if incorrect_predictions_details:
             print(f"Found {len(incorrect_predictions_details)} incorrect predictions in this epoch's validation set.")
-            incorrect_filename = 'incorrect.json'
-            with open(incorrect_filename, 'w') as f:
+            incorrect_filename = 'incorrect'  + str(epoch) + '.json'
+            with open('data/output/' + incorrect_filename, 'w') as f:
                 json.dump(incorrect_predictions_details, f, indent=4)
             print(f"Incorrect saved to {incorrect_filename}")
         else:

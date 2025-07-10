@@ -11,7 +11,7 @@ norm = colors.Normalize(vmin=0, vmax=9)
 
 
 def get_path(name):
-    return f'../data/input/{name}' if os.path.exists(f'../data/input/{name}') else name
+    return f'data\input\{name}' if os.path.exists(f'data\input\{name}') else name
 
 
 def plot_task(task, task_solutions, i, t, size=2.5, w1=0.9, prediction=None):
