@@ -15,11 +15,11 @@ warnings.filterwarnings('ignore')
  # Hyperparameters
 NUM_COLORS = 10
 GRID_SIZE = 30 # Max grid size
-LATENT_DIM = 256
+LATENT_DIM = 512
 NUM_TRAIN_PAIRS = 2 # Number of (input, output) examples per problem
-BATCH_SIZE = 4
+BATCH_SIZE = 16
 LEARNING_RATE = 0.001
-NUM_EPOCHS = 20
+NUM_EPOCHS = 50
 
 # Device configuration
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

@@ -37,15 +37,19 @@ class ProblemEncoder(nn.Module):
         object_encoder_layer = nn.TransformerEncoderLayer(
             d_model=latent_dim,
             nhead=num_heads,
-            dim_feedforward=latent_dim * 2, # Smaller feedforward for object-level
+            dim_feedforward=latent_dim * 3, # Smaller feedforward for object-level
             dropout=0.1,
             batch_first=True
         )
-        self.object_transformer_encoder = nn.TransformerEncoder(object_encoder_layer, num_layers=1)
+        self.object_transformer_encoder = nn.TransformerEncoder(object_encoder_layer, num_layers=3)
 
         # MLP to combine grid-level and object-level embeddings for a unified representation
         self.fusion_mlp = nn.Sequential(
             nn.Linear(latent_dim * 2, latent_dim), # latent_dim (from grid) + latent_dim (from objects)
+         )
+        
+        self.transformation_mlp = nn.Sequential(
+            nn.Linear(latent_dim * 2, latent_dim), # Input: concatenated input & output latent
             nn.GELU()
         )
 
@@ -53,15 +57,15 @@ class ProblemEncoder(nn.Module):
         main_encoder_layer = nn.TransformerEncoderLayer(
             d_model=latent_dim,
             nhead=num_heads,
-            dim_feedforward=latent_dim * 4,
+            dim_feedforward=latent_dim * 6,
             dropout=0.1,
             batch_first=True
         )
-        self.main_transformer_encoder = nn.TransformerEncoder(main_encoder_layer, num_layers=1)
+        self.main_transformer_encoder = nn.TransformerEncoder(main_encoder_layer, num_layers=3)
 
     def forward(self, encoded_train_inputs, encoded_train_outputs, encoded_test_input,
                 train_input_objects_batch, train_output_objects_batch, test_input_objects_batch,
-                image_encoder_ref, problem_batch_dims): # Added problem_batch_dims for true H/W
+                image_encoder_ref, problem_batch_dims): 
         """
         Args:
             encoded_train_inputs (list of Tensors): Latent representations of training inputs (grid-level).
@@ -193,9 +197,10 @@ class ProblemEncoder(nn.Module):
         sequence_elements = []
         # Create transformation embeddings for each train pair (using fused embeddings)
         for i in range(self.num_train_pairs):
-            transformation_embedding = fused_train_outputs[i] - fused_train_inputs[i] # Delta of fused embeddings
+            combined_io_fused = torch.cat([fused_train_inputs[i], fused_train_outputs[i]], dim=1)
+            transformation_embedding = self.transformation_mlp(combined_io_fused)
             sequence_elements.append(transformation_embedding + self.positional_embeddings[i])
-
+            
         # Add the fused test input embedding to the sequence
         test_input_embedding_with_pos = fused_test_input + self.positional_embeddings[self.num_train_pairs]
         sequence_elements.append(test_input_embedding_with_pos)

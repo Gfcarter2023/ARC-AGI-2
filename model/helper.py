@@ -133,11 +133,12 @@ def add_plot(loc, plot, attempt_name, axs, fig):
 
 def plot_incorrect(incorrect_prediction, size=2.5):
     print(incorrect_prediction['task_id'])
-    fig, axs = plt.subplots(1, 2, figsize=(size * 2, size))
-    add_plot(0, incorrect_prediction['correct_output'], "Correct", axs, fig)
-    add_plot(1, incorrect_prediction['predicted_output'], "Prediction", axs, fig)
-    plt.show()
     print('Correct Size: ' + str(incorrect_prediction['correct_width']) + 'x' + str(
         incorrect_prediction['correct_height']))
     print('Predicted Size: ' + str(incorrect_prediction['predicted_width']) + 'x' + str(
         incorrect_prediction['predicted_height']))
+    fig, axs = plt.subplots(1, 2, figsize=(size * 2, size))
+    add_plot(0, incorrect_prediction['correct_output'], "Correct", axs, fig)
+    add_plot(1, incorrect_prediction['predicted_output'], "Prediction", axs, fig)
+    plt.show()
+    

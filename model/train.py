@@ -7,7 +7,7 @@ warnings.filterwarnings('ignore')
 def train_arc_model(model, train_loader, val_loader, optimizer, criterion, num_epochs, device, evaluation_challenges,
                     val_dataset, GRID_SIZE):
     # New: Learning Rate Scheduler
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3, verbose=True,)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3,)
     
     model.to(device)
     for epoch in range(num_epochs):
@@ -168,10 +168,12 @@ def train_arc_model(model, train_loader, val_loader, optimizer, criterion, num_e
                             total_problem_correct += 1
 
                     if not (is_size_correct and is_grid_correct):  # If problem is incorrect
+                        h_pred = max(1, min(predicted_height[b].item(), GRID_SIZE))
+                        w_pred = max(1, min(predicted_width[b].item(), GRID_SIZE))
                         incorrect_predictions_details.append({
                             'task_id': problem_batch['task_ids'][b],
-                            'correct_output': true_output_indices[b].cpu().numpy().tolist(),
-                            'predicted_output': predicted_output_indices[b].cpu().numpy().tolist(),  # Full 30x30 output
+                            'correct_output': true_output_indices[b, :h_true, :w_true].cpu().numpy().tolist(),
+                            'predicted_output': predicted_output_indices[b, :h_pred, :w_pred].cpu().numpy().tolist(),  # Full 30x30 output
                             'correct_height': h_true,
                             'correct_width': w_true,
                             'predicted_height': predicted_height[b].item(),
